@@ -233,8 +233,8 @@ export default function AuthorPanel() {
         {/* Main Content */}
         <div className="flex-1 lg:ml-0">
           <div className="p-4 lg:p-8">
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6 lg:mb-8">
+            {/* Stats Cards - Hidden on mobile except for overview tab */}
+            <div className={`${activeTab === 'overview' ? 'block' : 'hidden lg:grid'} grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6 lg:mb-8`}>
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 lg:p-6">
                 <div className="flex items-center justify-between">
                   <div>
