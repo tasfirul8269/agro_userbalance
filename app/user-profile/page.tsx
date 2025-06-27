@@ -14,7 +14,6 @@ import {
   Save, 
   X,
   Camera,
-  Info,
   Bookmark,
   MessageCircle,
   Heart,
@@ -26,7 +25,8 @@ import {
   Linkedin,
   Youtube,
   Github,
-  Menu
+  Menu,
+  ChevronRight
 } from 'lucide-react';
 
 // Demo user credentials for login
@@ -59,7 +59,6 @@ export default function UserProfile() {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [userInfo, setUserInfo] = useState(demoUser);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
 
   const showToastMessage = (message: string) => {
@@ -90,10 +89,12 @@ export default function UserProfile() {
     github: Github
   };
 
-  const handleTabClick = (tab: string) => {
-    setActiveTab(tab);
-    setSidebarOpen(false);
-  };
+  const menuItems = [
+    { id: 'profile', name: 'Profile', icon: User },
+    { id: 'saved', name: 'Saved Articles', icon: Bookmark },
+    { id: 'comments', name: 'Comments', icon: MessageCircle },
+    { id: 'settings', name: 'Settings', icon: Settings },
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -105,188 +106,113 @@ export default function UserProfile() {
       )}
 
       {/* Mobile Header */}
-      <div className="lg:hidden bg-white shadow-sm border-b border-gray-200 px-4 py-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
+      <div className="lg:hidden bg-white shadow-sm border-b border-gray-200">
+        <div className="px-4 py-4">
+          <div className="flex items-center space-x-4">
             <Image
               src={userInfo.avatar}
               alt={userInfo.name}
-              width={32}
-              height={32}
-              className="w-8 h-8 rounded-full object-cover"
+              width={48}
+              height={48}
+              className="w-12 h-12 rounded-full object-cover"
             />
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900">{userInfo.name}</h2>
-              <p className="text-sm text-gray-600">Profile</p>
+            <div className="flex-1">
+              <h1 className="text-lg font-semibold text-gray-900">{userInfo.name}</h1>
+              <p className="text-sm text-gray-600">{userInfo.email}</p>
             </div>
+            {!isEditing ? (
+              <button
+                onClick={() => setIsEditing(true)}
+                className="p-2 text-gray-400 hover:text-primary-400 transition-colors"
+              >
+                <Edit size={20} />
+              </button>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => setIsEditing(false)}
+                  className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X size={20} />
+                </button>
+                <button
+                  onClick={handleSave}
+                  className="p-2 text-primary-400 hover:text-primary-600 transition-colors"
+                >
+                  <Save size={20} />
+                </button>
+              </div>
+            )}
           </div>
-          <button
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 text-gray-600 hover:text-gray-900"
-          >
-            {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-8">
-        {/* Header */}
-        <div className="hidden lg:block bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold text-gray-900">My Profile</h1>
-              <button className="p-2 text-gray-400 hover:text-blue-500 transition-colors group relative">
-                <Info size={16} />
-                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                  Manage your personal information and preferences
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Desktop Sidebar */}
+          <div className="hidden lg:block lg:col-span-1">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+              {/* Profile Picture */}
+              <div className="text-center mb-6">
+                <div className="relative inline-block">
+                  <Image
+                    src={userInfo.avatar}
+                    alt={userInfo.name}
+                    width={120}
+                    height={120}
+                    className="w-30 h-30 rounded-full object-cover mx-auto border-4 border-white shadow-lg"
+                  />
+                  {isEditing && (
+                    <label className="absolute bottom-0 right-0 bg-primary-400 text-white p-2 rounded-full cursor-pointer hover:bg-primary-500 transition-colors">
+                      <Camera size={16} />
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                      />
+                    </label>
+                  )}
                 </div>
-              </button>
-            </div>
-            <div className="flex items-center space-x-3">
-              {isEditing ? (
-                <>
-                  <button
-                    onClick={() => setIsEditing(false)}
-                    className="btn-secondary flex items-center space-x-2"
-                  >
-                    <X size={16} />
-                    <span>Cancel</span>
-                  </button>
-                  <button
-                    onClick={handleSave}
-                    className="btn-primary flex items-center space-x-2"
-                  >
-                    <Save size={16} />
-                    <span>Save Changes</span>
-                  </button>
-                </>
-              ) : (
+                <h2 className="text-xl font-semibold text-gray-900 mt-4">{userInfo.name}</h2>
+                <p className="text-gray-600">{userInfo.email}</p>
+              </div>
+
+              {/* Quick Stats */}
+              <div className="space-y-4 mb-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Bookmark size={16} className="text-primary-400" />
+                    <span className="text-gray-600">Saved Articles</span>
+                  </div>
+                  <span className="font-semibold text-gray-900">{userInfo.stats.savedArticles}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <MessageCircle size={16} className="text-primary-400" />
+                    <span className="text-gray-600">Comments</span>
+                  </div>
+                  <span className="font-semibold text-gray-900">{userInfo.stats.comments}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Heart size={16} className="text-primary-400" />
+                    <span className="text-gray-600">Likes</span>
+                  </div>
+                  <span className="font-semibold text-gray-900">{userInfo.stats.likes}</span>
+                </div>
+              </div>
+
+              {/* Edit Button */}
+              {!isEditing ? (
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="btn-primary flex items-center space-x-2"
+                  className="w-full btn-primary flex items-center justify-center space-x-2"
                 >
                   <Edit size={16} />
                   <span>Edit Profile</span>
                 </button>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
-          {/* Sidebar */}
-          <div className={`${sidebarOpen ? 'fixed inset-0 z-50 bg-black bg-opacity-50' : 'hidden'} lg:block lg:col-span-1`}>
-            <div className={`${sidebarOpen ? 'fixed left-0 top-0 h-full w-80 bg-white shadow-lg transform translate-x-0' : ''} lg:relative lg:w-auto lg:h-auto lg:bg-transparent lg:shadow-none`}>
-              {/* Mobile sidebar header */}
-              {sidebarOpen && (
-                <div className="lg:hidden flex items-center justify-between p-4 border-b border-gray-200">
-                  <h3 className="text-lg font-semibold text-gray-900">Menu</h3>
-                  <button
-                    onClick={() => setSidebarOpen(false)}
-                    className="p-2 text-gray-400 hover:text-gray-600"
-                  >
-                    <X size={20} />
-                  </button>
-                </div>
-              )}
-
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-6 mb-6">
-                {/* Profile Picture */}
-                <div className="text-center mb-6">
-                  <div className="relative inline-block">
-                    <Image
-                      src={userInfo.avatar}
-                      alt={userInfo.name}
-                      width={120}
-                      height={120}
-                      className="w-24 h-24 lg:w-30 lg:h-30 rounded-full object-cover mx-auto border-4 border-white shadow-lg"
-                    />
-                    {isEditing && (
-                      <label className="absolute bottom-0 right-0 bg-primary-400 text-white p-2 rounded-full cursor-pointer hover:bg-primary-500 transition-colors">
-                        <Camera size={16} />
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handleImageUpload}
-                          className="hidden"
-                        />
-                      </label>
-                    )}
-                  </div>
-                  <h2 className="text-lg lg:text-xl font-semibold text-gray-900 mt-4">{userInfo.name}</h2>
-                  <p className="text-gray-600 text-sm lg:text-base">{userInfo.email}</p>
-                </div>
-
-                {/* Quick Stats */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Bookmark size={16} className="text-primary-400" />
-                      <span className="text-gray-600 text-sm lg:text-base">Saved Articles</span>
-                    </div>
-                    <span className="font-semibold text-gray-900">{userInfo.stats.savedArticles}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <MessageCircle size={16} className="text-primary-400" />
-                      <span className="text-gray-600 text-sm lg:text-base">Comments</span>
-                    </div>
-                    <span className="font-semibold text-gray-900">{userInfo.stats.comments}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Heart size={16} className="text-primary-400" />
-                      <span className="text-gray-600 text-sm lg:text-base">Likes</span>
-                    </div>
-                    <span className="font-semibold text-gray-900">{userInfo.stats.likes}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Quick Actions */}
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-                <div className="space-y-3">
-                  <button 
-                    onClick={() => handleTabClick('profile')}
-                    className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors w-full text-left ${
-                      activeTab === 'profile' ? 'bg-primary-50 text-primary-600' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                    }`}
-                  >
-                    <User size={16} />
-                    <span>Profile</span>
-                  </button>
-                  <Link href="/dashboard" className="flex items-center space-x-3 px-3 py-2 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition-colors">
-                    <User size={16} />
-                    <span>Dashboard</span>
-                  </Link>
-                  <Link href="/saved-articles" className="flex items-center space-x-3 px-3 py-2 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg transition-colors">
-                    <Bookmark size={16} />
-                    <span>Saved Articles</span>
-                  </Link>
-                  <button 
-                    onClick={() => handleTabClick('settings')}
-                    className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors w-full text-left ${
-                      activeTab === 'settings' ? 'bg-primary-50 text-primary-600' : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                    }`}
-                  >
-                    <Settings size={16} />
-                    <span>Settings</span>
-                  </button>
-                  <button className="flex items-center space-x-3 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors w-full text-left">
-                    <LogOut size={16} />
-                    <span>Logout</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Main Content */}
-          <div className="lg:col-span-3">
-            {/* Mobile Edit Button */}
-            <div className="lg:hidden mb-6">
-              {isEditing ? (
+              ) : (
                 <div className="flex space-x-3">
                   <button
                     onClick={() => setIsEditing(false)}
@@ -303,25 +229,127 @@ export default function UserProfile() {
                     <span>Save</span>
                   </button>
                 </div>
-              ) : (
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="w-full btn-primary flex items-center justify-center space-x-2"
-                >
-                  <Edit size={16} />
-                  <span>Edit Profile</span>
-                </button>
               )}
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 lg:p-6">
+            {/* Navigation Menu */}
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Menu</h3>
+              <div className="space-y-2">
+                {menuItems.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => setActiveTab(item.id)}
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors ${
+                      activeTab === item.id
+                        ? 'bg-primary-50 text-primary-600'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <item.icon size={16} />
+                      <span>{item.name}</span>
+                    </div>
+                    <ChevronRight size={16} />
+                  </button>
+                ))}
+                <button className="w-full flex items-center justify-between px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                  <div className="flex items-center space-x-3">
+                    <LogOut size={16} />
+                    <span>Logout</span>
+                  </div>
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile Navigation */}
+          <div className="lg:hidden mb-6">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+              <div className="grid grid-cols-2 gap-3">
+                {menuItems.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => setActiveTab(item.id)}
+                    className={`flex items-center justify-center space-x-2 px-4 py-3 rounded-lg transition-colors ${
+                      activeTab === item.id
+                        ? 'bg-primary-50 text-primary-600'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                    }`}
+                  >
+                    <item.icon size={16} />
+                    <span className="text-sm font-medium">{item.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className="lg:col-span-3">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
               {activeTab === 'profile' && (
                 <>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-6">Personal Information</h3>
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-xl font-semibold text-gray-900">Personal Information</h3>
+                    <div className="lg:hidden">
+                      {!isEditing ? (
+                        <button
+                          onClick={() => setIsEditing(true)}
+                          className="btn-primary flex items-center space-x-2"
+                        >
+                          <Edit size={16} />
+                          <span>Edit</span>
+                        </button>
+                      ) : (
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => setIsEditing(false)}
+                            className="btn-secondary flex items-center space-x-2"
+                          >
+                            <X size={16} />
+                            <span>Cancel</span>
+                          </button>
+                          <button
+                            onClick={handleSave}
+                            className="btn-primary flex items-center space-x-2"
+                          >
+                            <Save size={16} />
+                            <span>Save</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                   
+                  {/* Mobile Profile Picture */}
+                  <div className="lg:hidden text-center mb-6">
+                    <div className="relative inline-block">
+                      <Image
+                        src={userInfo.avatar}
+                        alt={userInfo.name}
+                        width={100}
+                        height={100}
+                        className="w-25 h-25 rounded-full object-cover mx-auto border-4 border-white shadow-lg"
+                      />
+                      {isEditing && (
+                        <label className="absolute bottom-0 right-0 bg-primary-400 text-white p-2 rounded-full cursor-pointer hover:bg-primary-500 transition-colors">
+                          <Camera size={14} />
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            className="hidden"
+                          />
+                        </label>
+                      )}
+                    </div>
+                  </div>
+
                   <div className="space-y-6">
                     {/* Basic Info */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
                         {isEditing ? (
@@ -357,7 +385,7 @@ export default function UserProfile() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
                         {isEditing ? (
@@ -434,7 +462,7 @@ export default function UserProfile() {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-4">Social Media</label>
                       {isEditing ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                           {Object.entries(userInfo.socialMedia).map(([platform, url]) => (
                             <div key={platform}>
                               <label className="block text-sm font-medium text-gray-600 mb-1 capitalize">{platform}</label>
@@ -452,7 +480,7 @@ export default function UserProfile() {
                           ))}
                         </div>
                       ) : (
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                           {Object.entries(userInfo.socialMedia).map(([platform, url]) => {
                             if (!url) return null;
                             const IconComponent = socialIcons[platform as keyof typeof socialIcons];
@@ -487,38 +515,66 @@ export default function UserProfile() {
                 </>
               )}
 
+              {activeTab === 'saved' && (
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-6">Saved Articles</h3>
+                  <div className="text-center py-12">
+                    <Bookmark size={48} className="mx-auto text-gray-300 mb-4" />
+                    <h4 className="text-lg font-medium text-gray-900 mb-2">No saved articles yet</h4>
+                    <p className="text-gray-600 mb-4">Start saving articles you want to read later</p>
+                    <Link href="/blogs" className="btn-primary">
+                      Browse Articles
+                    </Link>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'comments' && (
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-6">Your Comments</h3>
+                  <div className="text-center py-12">
+                    <MessageCircle size={48} className="mx-auto text-gray-300 mb-4" />
+                    <h4 className="text-lg font-medium text-gray-900 mb-2">No comments yet</h4>
+                    <p className="text-gray-600 mb-4">Join the conversation by commenting on articles</p>
+                    <Link href="/blogs" className="btn-primary">
+                      Browse Articles
+                    </Link>
+                  </div>
+                </div>
+              )}
+
               {activeTab === 'settings' && (
-                <>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-6">Account Settings</h3>
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-6">Account Settings</h3>
                   <div className="space-y-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Display Name</label>
-                      <input
-                        type="text"
-                        defaultValue={userInfo.name}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Bio</label>
-                      <textarea
-                        rows={4}
-                        defaultValue={userInfo.bio}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400"
-                      />
-                    </div>
-
-                    <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Email Notifications</label>
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         <label className="flex items-center">
                           <input type="checkbox" className="rounded border-gray-300 text-primary-400 focus:ring-primary-400" defaultChecked />
-                          <span className="ml-2 text-sm text-gray-700">New comments on my posts</span>
+                          <span className="ml-2 text-sm text-gray-700">New articles from followed authors</span>
                         </label>
                         <label className="flex items-center">
                           <input type="checkbox" className="rounded border-gray-300 text-primary-400 focus:ring-primary-400" defaultChecked />
-                          <span className="ml-2 text-sm text-gray-700">Weekly earnings report</span>
+                          <span className="ml-2 text-sm text-gray-700">Weekly newsletter</span>
+                        </label>
+                        <label className="flex items-center">
+                          <input type="checkbox" className="rounded border-gray-300 text-primary-400 focus:ring-primary-400" />
+                          <span className="ml-2 text-sm text-gray-700">Comment replies</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Privacy Settings</label>
+                      <div className="space-y-3">
+                        <label className="flex items-center">
+                          <input type="checkbox" className="rounded border-gray-300 text-primary-400 focus:ring-primary-400" defaultChecked />
+                          <span className="ml-2 text-sm text-gray-700">Make profile public</span>
+                        </label>
+                        <label className="flex items-center">
+                          <input type="checkbox" className="rounded border-gray-300 text-primary-400 focus:ring-primary-400" />
+                          <span className="ml-2 text-sm text-gray-700">Show activity status</span>
                         </label>
                       </div>
                     </div>
@@ -527,7 +583,7 @@ export default function UserProfile() {
                       Save Settings
                     </button>
                   </div>
-                </>
+                </div>
               )}
             </div>
           </div>

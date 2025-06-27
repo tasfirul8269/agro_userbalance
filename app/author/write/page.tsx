@@ -80,10 +80,10 @@ export default function WritePost() {
               alt="Cover"
               width={1200}
               height={400}
-              className="w-full h-64 object-cover rounded-lg mb-8"
+              className="w-full h-48 sm:h-64 object-cover rounded-lg mb-6 sm:mb-8"
             />
           )}
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-6">
             {title || 'Untitled Post'}
           </h1>
           <div className="prose prose-lg max-w-none">
@@ -111,28 +111,28 @@ export default function WritePost() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Write New Post</h1>
-          <div className="flex items-center space-x-3">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 space-y-4 sm:space-y-0">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Write New Post</h1>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
             <button
               onClick={() => setIsPreview(true)}
-              className="btn-secondary flex items-center space-x-2"
+              className="btn-secondary flex items-center justify-center space-x-2"
             >
               <Eye size={16} />
               <span>Preview</span>
             </button>
             <button
               onClick={handleSaveDraft}
-              className="btn-secondary flex items-center space-x-2"
+              className="btn-secondary flex items-center justify-center space-x-2"
             >
               <Save size={16} />
               <span>Save Draft</span>
             </button>
             <button
               onClick={handlePublish}
-              className="btn-primary flex items-center space-x-2"
+              className="btn-primary flex items-center justify-center space-x-2"
             >
               <Send size={16} />
               <span>Publish</span>
@@ -140,7 +140,7 @@ export default function WritePost() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
           {/* Title */}
           <div className="mb-6">
             <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
@@ -152,7 +152,7 @@ export default function WritePost() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter your post title..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent text-lg"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent text-base sm:text-lg"
             />
           </div>
 
@@ -161,8 +161,8 @@ export default function WritePost() {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Cover Image
             </label>
-            <div className="flex items-center space-x-4">
-              <label className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+              <label className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors w-full sm:w-auto justify-center">
                 <Upload size={16} />
                 <span>Upload Image</span>
                 <input
@@ -173,13 +173,13 @@ export default function WritePost() {
                 />
               </label>
               {coverImage && (
-                <div className="relative">
+                <div className="relative w-full sm:w-auto">
                   <Image
                     src={coverImage}
                     alt="Cover preview"
                     width={80}
                     height={80}
-                    className="w-20 h-20 object-cover rounded-lg"
+                    className="w-full sm:w-20 h-32 sm:h-20 object-cover rounded-lg"
                   />
                   <button
                     onClick={() => setCoverImage('')}
@@ -197,13 +197,16 @@ export default function WritePost() {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Content
             </label>
-            <ReactQuill
-              theme="snow"
-              value={content}
-              onChange={setContent}
-              modules={quillModules}
-              placeholder="Start writing your post..."
-            />
+            <div className="border border-gray-300 rounded-lg overflow-hidden">
+              <ReactQuill
+                theme="snow"
+                value={content}
+                onChange={setContent}
+                modules={quillModules}
+                placeholder="Start writing your post..."
+                style={{ minHeight: '300px' }}
+              />
+            </div>
           </div>
 
           {/* Tags */}
@@ -238,24 +241,24 @@ export default function WritePost() {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center justify-end space-x-3 pt-6 border-t border-gray-200">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end space-y-3 sm:space-y-0 sm:space-x-3 pt-6 border-t border-gray-200">
             <button
               onClick={() => setIsPreview(true)}
-              className="btn-secondary flex items-center space-x-2"
+              className="btn-secondary flex items-center justify-center space-x-2"
             >
               <Eye size={16} />
               <span>Preview</span>
             </button>
             <button
               onClick={handleSaveDraft}
-              className="btn-secondary flex items-center space-x-2"
+              className="btn-secondary flex items-center justify-center space-x-2"
             >
               <Save size={16} />
               <span>Save Draft</span>
             </button>
             <button
               onClick={handlePublish}
-              className="btn-primary flex items-center space-x-2"
+              className="btn-primary flex items-center justify-center space-x-2"
             >
               <Send size={16} />
               <span>Publish Post</span>

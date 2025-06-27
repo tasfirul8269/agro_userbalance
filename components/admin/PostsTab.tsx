@@ -417,26 +417,26 @@ export default function PostsTab() {
         </div>
       </div>
 
-      {/* Create/Edit Post Modal */}
+      {/* Create Post Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
             <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onClick={() => {setShowAddModal(false); setIsPreview(false);}}></div>
             
-            <div className="inline-block w-full max-w-6xl my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
+            <div className="inline-block w-full max-w-4xl my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
               {!isPreview ? (
                 <div className="max-h-[90vh] overflow-y-auto">
                   {/* Header */}
-                  <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 z-10">
+                  <div className="sticky top-0 bg-white border-b border-gray-200 px-4 sm:px-6 py-4 z-10">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-2xl font-bold text-gray-900">Create New Post</h3>
-                      <div className="flex items-center space-x-3">
+                      <h3 className="text-xl sm:text-2xl font-bold text-gray-900">Create New Post</h3>
+                      <div className="flex items-center space-x-2 sm:space-x-3">
                         <button
                           onClick={() => setIsPreview(true)}
-                          className="btn-secondary flex items-center space-x-2"
+                          className="btn-secondary flex items-center space-x-2 text-sm"
                         >
                           <Eye size={16} />
-                          <span>Preview</span>
+                          <span className="hidden sm:inline">Preview</span>
                         </button>
                         <button
                           onClick={() => {setShowAddModal(false); setIsPreview(false);}}
@@ -448,7 +448,7 @@ export default function PostsTab() {
                     </div>
                   </div>
                   
-                  <form onSubmit={handleAddPost} className="p-6 space-y-6">
+                  <form onSubmit={handleAddPost} className="p-4 sm:p-6 space-y-6">
                     {/* Title */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Post Title *</label>
@@ -465,7 +465,7 @@ export default function PostsTab() {
                     {/* Cover Image */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Cover Image</label>
-                      <div className="flex items-center space-x-4">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
                         <label className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
                           <Upload size={16} />
                           <span>Upload Image</span>
@@ -511,7 +511,7 @@ export default function PostsTab() {
                     </div>
 
                     {/* Category, Status, and Author */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
                         <select
@@ -547,77 +547,6 @@ export default function PostsTab() {
                           onChange={(e) => setNewPost({...newPost, author: e.target.value})}
                           className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400"
                         />
-                      </div>
-                    </div>
-
-                    {/* Admin Options */}
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <h4 className="text-sm font-medium text-gray-900 mb-3">Admin Options</h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="flex items-center">
-                          <input
-                            type="checkbox"
-                            id="featured"
-                            checked={newPost.featured}
-                            onChange={(e) => setNewPost({...newPost, featured: e.target.checked})}
-                            className="h-4 w-4 text-primary-400 focus:ring-primary-400 border-gray-300 rounded"
-                          />
-                          <label htmlFor="featured" className="ml-2 block text-sm text-gray-700">
-                            Featured Post
-                          </label>
-                        </div>
-                        <div className="flex items-center">
-                          <input
-                            type="checkbox"
-                            id="allowComments"
-                            checked={newPost.allowComments}
-                            onChange={(e) => setNewPost({...newPost, allowComments: e.target.checked})}
-                            className="h-4 w-4 text-primary-400 focus:ring-primary-400 border-gray-300 rounded"
-                          />
-                          <label htmlFor="allowComments" className="ml-2 block text-sm text-gray-700">
-                            Allow Comments
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Scheduled Publishing */}
-                    {newPost.status === 'Scheduled' && (
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Publish Date</label>
-                        <input
-                          type="datetime-local"
-                          value={newPost.publishDate}
-                          onChange={(e) => setNewPost({...newPost, publishDate: e.target.value})}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400"
-                        />
-                      </div>
-                    )}
-
-                    {/* SEO Section */}
-                    <div className="bg-blue-50 rounded-lg p-4">
-                      <h4 className="text-sm font-medium text-gray-900 mb-3">SEO Settings</h4>
-                      <div className="space-y-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">SEO Title</label>
-                          <input
-                            type="text"
-                            value={newPost.seoTitle}
-                            onChange={(e) => setNewPost({...newPost, seoTitle: e.target.value})}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400"
-                            placeholder="SEO optimized title"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">SEO Description</label>
-                          <textarea
-                            rows={2}
-                            value={newPost.seoDescription}
-                            onChange={(e) => setNewPost({...newPost, seoDescription: e.target.value})}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400"
-                            placeholder="Meta description for search engines"
-                          />
-                        </div>
                       </div>
                     </div>
 
@@ -661,24 +590,24 @@ export default function PostsTab() {
                           onChange={(content) => setNewPost({...newPost, content})}
                           modules={quillModules}
                           placeholder="Start writing your post..."
-                          style={{ height: '400px' }}
+                          style={{ height: '300px' }}
                         />
                       </div>
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex items-center justify-end space-x-3 pt-16 border-t border-gray-200 sticky bottom-0 bg-white">
+                    <div className="flex flex-col sm:flex-row items-center justify-end space-y-3 sm:space-y-0 sm:space-x-3 pt-12 border-t border-gray-200 sticky bottom-0 bg-white">
                       <button
                         type="button"
                         onClick={() => {setShowAddModal(false); setIsPreview(false);}}
-                        className="px-6 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+                        className="w-full sm:w-auto px-6 py-2 text-gray-600 hover:text-gray-800 transition-colors"
                       >
                         Cancel
                       </button>
                       <button
                         type="button"
                         onClick={() => setIsPreview(true)}
-                        className="btn-secondary flex items-center space-x-2"
+                        className="w-full sm:w-auto btn-secondary flex items-center justify-center space-x-2"
                       >
                         <Eye size={16} />
                         <span>Preview</span>
@@ -686,37 +615,26 @@ export default function PostsTab() {
                       <button
                         type="button"
                         onClick={handleSaveDraft}
-                        className="btn-secondary flex items-center space-x-2"
+                        className="w-full sm:w-auto btn-secondary flex items-center justify-center space-x-2"
                       >
                         <Save size={16} />
                         <span>Save Draft</span>
                       </button>
-                      {newPost.status === 'Scheduled' ? (
-                        <button
-                          type="button"
-                          onClick={handleSchedulePublish}
-                          className="btn-primary flex items-center space-x-2"
-                        >
-                          <Send size={16} />
-                          <span>Schedule</span>
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={handlePublish}
-                          className="btn-primary flex items-center space-x-2"
-                        >
-                          <Send size={16} />
-                          <span>Publish</span>
-                        </button>
-                      )}
+                      <button
+                        type="button"
+                        onClick={handlePublish}
+                        className="w-full sm:w-auto btn-primary flex items-center justify-center space-x-2"
+                      >
+                        <Send size={16} />
+                        <span>Publish</span>
+                      </button>
                     </div>
                   </form>
                 </div>
               ) : (
                 /* Preview Mode */
                 <div>
-                  <div className="bg-gray-50 border-b border-gray-200 px-6 py-4">
+                  <div className="bg-gray-50 border-b border-gray-200 px-4 sm:px-6 py-4">
                     <div className="flex items-center justify-between">
                       <h3 className="text-lg font-semibold text-gray-900">Preview Mode</h3>
                       <div className="flex items-center space-x-2">
@@ -735,39 +653,28 @@ export default function PostsTab() {
                       </div>
                     </div>
                   </div>
-                  <div className="p-6 max-h-[80vh] overflow-y-auto">
+                  <div className="p-4 sm:p-6 max-h-[80vh] overflow-y-auto">
                     {newPost.coverImage && (
                       <Image
                         src={newPost.coverImage}
                         alt="Cover"
                         width={1200}
                         height={400}
-                        className="w-full h-64 object-cover rounded-lg mb-8"
+                        className="w-full h-48 sm:h-64 object-cover rounded-lg mb-6 sm:mb-8"
                       />
                     )}
                     <div className="flex items-center space-x-2 mb-4">
                       <span className="px-3 py-1 bg-primary-100 text-primary-800 rounded-full text-sm font-medium">
                         {newPost.category}
                       </span>
-                      {newPost.featured && (
-                        <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">
-                          Featured
-                        </span>
-                      )}
                     </div>
-                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                       {newPost.title || 'Untitled Post'}
                     </h1>
-                    <div className="flex items-center space-x-4 text-sm text-gray-600 mb-6">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-gray-600 mb-6">
                       <span>By {newPost.author}</span>
                       <span>•</span>
                       <span>{newPost.status}</span>
-                      {newPost.publishDate && (
-                        <>
-                          <span>•</span>
-                          <span>Scheduled for {new Date(newPost.publishDate).toLocaleDateString()}</span>
-                        </>
-                      )}
                     </div>
                     <p className="text-lg text-gray-600 mb-6">{newPost.excerpt}</p>
                     <div className="prose prose-lg max-w-none">
@@ -796,38 +703,6 @@ export default function PostsTab() {
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
-      {showDeleteConfirm && postToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setShowDeleteConfirm(false)}></div>
-          <div className="relative bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Trash2 className="w-8 h-8 text-red-500" />
-              </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Delete Post</h3>
-              <p className="text-gray-600 mb-6">
-                Are you sure you want to delete <strong>{postToDelete.title}</strong>? This action cannot be undone.
-              </p>
-              <div className="flex items-center justify-center space-x-3">
-                <button
-                  onClick={() => setShowDeleteConfirm(false)}
-                  className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleDeletePost}
-                  className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
-                >
-                  Delete Post
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Edit Post Modal */}
       {showEditModal && postToEdit && (
         <div className="fixed inset-0 z-50 overflow-y-auto">
@@ -837,7 +712,7 @@ export default function PostsTab() {
             <div className="inline-block w-full max-w-4xl my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
               <div className="max-h-[90vh] overflow-y-auto">
                 {/* Header */}
-                <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 z-10">
+                <div className="sticky top-0 bg-white border-b border-gray-200 px-4 sm:px-6 py-4 z-10">
                   <div className="flex items-center justify-between">
                     <h3 className="text-xl font-semibold text-gray-900">Edit Post</h3>
                     <button
@@ -849,7 +724,7 @@ export default function PostsTab() {
                   </div>
                 </div>
                 
-                <form onSubmit={handleEditPost} className="p-6 space-y-6">
+                <form onSubmit={handleEditPost} className="p-4 sm:p-6 space-y-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
                     <input
@@ -868,7 +743,7 @@ export default function PostsTab() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
                       <select
@@ -903,50 +778,54 @@ export default function PostsTab() {
                     </div>
                   </div>
 
-                  {/* Admin Options */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <h4 className="text-sm font-medium text-gray-900 mb-3">Admin Options</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="flex items-center">
-                        <input
-                          type="checkbox"
-                          id="editFeatured"
-                          className="h-4 w-4 text-primary-400 focus:ring-primary-400 border-gray-300 rounded"
-                        />
-                        <label htmlFor="editFeatured" className="ml-2 block text-sm text-gray-700">
-                          Featured Post
-                        </label>
-                      </div>
-                      <div className="flex items-center">
-                        <input
-                          type="checkbox"
-                          id="editAllowComments"
-                          defaultChecked
-                          className="h-4 w-4 text-primary-400 focus:ring-primary-400 border-gray-300 rounded"
-                        />
-                        <label htmlFor="editAllowComments" className="ml-2 block text-sm text-gray-700">
-                          Allow Comments
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200">
+                  <div className="flex flex-col sm:flex-row items-center justify-end space-y-3 sm:space-y-0 sm:space-x-3 pt-4 border-t border-gray-200">
                     <button
                       type="button"
                       onClick={() => setShowEditModal(false)}
-                      className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+                      className="w-full sm:w-auto px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
                     >
                       Cancel
                     </button>
                     <button
                       type="submit"
-                      className="btn-primary"
+                      className="w-full sm:w-auto btn-primary"
                     >
                       Update Post
                     </button>
                   </div>
                 </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && postToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setShowDeleteConfirm(false)}></div>
+          <div className="relative bg-white rounded-xl shadow-2xl p-6 w-full max-w-md">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Trash2 className="w-8 h-8 text-red-500" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Delete Post</h3>
+              <p className="text-gray-600 mb-6">
+                Are you sure you want to delete <strong>{postToDelete.title}</strong>? This action cannot be undone.
+              </p>
+              <div className="flex items-center justify-center space-x-3">
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleDeletePost}
+                  className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
+                >
+                  Delete Post
+                </button>
               </div>
             </div>
           </div>
