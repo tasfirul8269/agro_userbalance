@@ -1,12 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Filter, MoreVertical, Edit, Trash2, Eye, Plus, X, Upload, Tag, Save, Send, Info } from 'lucide-react';
+import { Search, Filter, MoreVertical, Edit, Trash2, Eye, Plus, X, Info } from 'lucide-react';
 import Image from 'next/image';
-import dynamic from 'next/dynamic';
-
-// Dynamically import ReactQuill to avoid SSR issues
-const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
+import Link from 'next/link';
 
 const mockPosts = [
   {
@@ -71,47 +68,13 @@ export default function PostsTab() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
   const [filterCategory, setFilterCategory] = useState('All');
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [postToDelete, setPostToDelete] = useState<any>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [postToEdit, setPostToEdit] = useState<any>(null);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastType, setToastType] = useState<'success' | 'error' | 'warning'>('success');
-  const [isPreview, setIsPreview] = useState(false);
-
-  const [newPost, setNewPost] = useState({
-    title: '',
-    excerpt: '',
-    content: '',
-    category: 'Sustainability',
-    tags: [] as string[],
-    coverImage: '',
-    status: 'Draft',
-    author: 'Admin User',
-    featured: false,
-    allowComments: true,
-    seoTitle: '',
-    seoDescription: '',
-    publishDate: '',
-    scheduledPublish: false
-  });
-
-  const [newTag, setNewTag] = useState('');
-
-  const quillModules = {
-    toolbar: [
-      [{ 'header': [1, 2, 3, false] }],
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-      ['blockquote', 'code-block'],
-      ['link', 'image'],
-      [{ 'color': [] }, { 'background': [] }],
-      [{ 'align': [] }],
-      ['clean']
-    ],
-  };
 
   const filteredPosts = mockPosts.filter(post => {
     const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -129,29 +92,6 @@ export default function PostsTab() {
     setTimeout(() => setShowToast(false), 3000);
   };
 
-  const handleAddPost = (e: React.FormEvent) => {
-    e.preventDefault();
-    showToastMessage('Post created successfully!');
-    setShowAddModal(false);
-    setIsPreview(false);
-    setNewPost({
-      title: '',
-      excerpt: '',
-      content: '',
-      category: 'Sustainability',
-      tags: [],
-      coverImage: '',
-      status: 'Draft',
-      author: 'Admin User',
-      featured: false,
-      allowComments: true,
-      seoTitle: '',
-      seoDescription: '',
-      publishDate: '',
-      scheduledPublish: false
-    });
-  };
-
   const handleDeletePost = () => {
     showToastMessage('Post deleted successfully!');
     setShowDeleteConfirm(false);
@@ -163,40 +103,6 @@ export default function PostsTab() {
     showToastMessage('Post updated successfully!');
     setShowEditModal(false);
     setPostToEdit(null);
-  };
-
-  const handleAddTag = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && newTag.trim() && !newPost.tags.includes(newTag.trim())) {
-      setNewPost({...newPost, tags: [...newPost.tags, newTag.trim()]});
-      setNewTag('');
-    }
-  };
-
-  const removeTag = (tagToRemove: string) => {
-    setNewPost({...newPost, tags: newPost.tags.filter(tag => tag !== tagToRemove)});
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setNewPost({...newPost, coverImage: imageUrl});
-    }
-  };
-
-  const handleSaveDraft = () => {
-    setNewPost({...newPost, status: 'Draft'});
-    showToastMessage('Draft saved successfully!');
-  };
-
-  const handlePublish = () => {
-    setNewPost({...newPost, status: 'Published'});
-    showToastMessage('Post published successfully!');
-  };
-
-  const handleSchedulePublish = () => {
-    setNewPost({...newPost, status: 'Scheduled'});
-    showToastMessage('Post scheduled for publishing!');
   };
 
   return (
@@ -225,13 +131,13 @@ export default function PostsTab() {
             </div>
           </button>
         </div>
-        <button 
-          onClick={() => setShowAddModal(true)}
+        <Link 
+          href="/admin-write-post"
           className="btn-primary flex items-center space-x-2"
         >
           <Plus size={16} />
           <span>New Post</span>
-        </button>
+        </Link>
       </div>
 
       {/* Stats Cards */}
@@ -388,16 +294,13 @@ export default function PostsTab() {
                       >
                         <Eye size={16} />
                       </button>
-                      <button 
-                        onClick={() => {
-                          setPostToEdit(post);
-                          setShowEditModal(true);
-                        }}
+                      <Link
+                        href={`/admin-edit-post/${post.id}`}
                         className="p-1 text-gray-400 hover:text-green-500 transition-colors"
                         title="Edit Post"
                       >
                         <Edit size={16} />
-                      </button>
+                      </Link>
                       <button 
                         onClick={() => {
                           setPostToDelete(post);
@@ -416,389 +319,6 @@ export default function PostsTab() {
           </table>
         </div>
       </div>
-
-      {/* Create Post Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-          <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-            <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onClick={() => {setShowAddModal(false); setIsPreview(false);}}></div>
-            
-            <div className="inline-block w-full max-w-4xl my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
-              {!isPreview ? (
-                <div className="max-h-[90vh] overflow-y-auto">
-                  {/* Header */}
-                  <div className="sticky top-0 bg-white border-b border-gray-200 px-4 sm:px-6 py-4 z-10">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-xl sm:text-2xl font-bold text-gray-900">Create New Post</h3>
-                      <div className="flex items-center space-x-2 sm:space-x-3">
-                        <button
-                          onClick={() => setIsPreview(true)}
-                          className="btn-secondary flex items-center space-x-2 text-sm"
-                        >
-                          <Eye size={16} />
-                          <span className="hidden sm:inline">Preview</span>
-                        </button>
-                        <button
-                          onClick={() => {setShowAddModal(false); setIsPreview(false);}}
-                          className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"
-                        >
-                          <X size={20} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <form onSubmit={handleAddPost} className="p-4 sm:p-6 space-y-6">
-                    {/* Title */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Post Title *</label>
-                      <input
-                        type="text"
-                        required
-                        value={newPost.title}
-                        onChange={(e) => setNewPost({...newPost, title: e.target.value})}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400 text-lg"
-                        placeholder="Enter your post title..."
-                      />
-                    </div>
-
-                    {/* Cover Image */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Cover Image</label>
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
-                        <label className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                          <Upload size={16} />
-                          <span>Upload Image</span>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleImageUpload}
-                            className="hidden"
-                          />
-                        </label>
-                        {newPost.coverImage && (
-                          <div className="relative">
-                            <Image
-                              src={newPost.coverImage}
-                              alt="Cover preview"
-                              width={80}
-                              height={80}
-                              className="w-20 h-20 object-cover rounded-lg"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => setNewPost({...newPost, coverImage: ''})}
-                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
-                            >
-                              <X size={12} />
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Excerpt */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Excerpt *</label>
-                      <textarea
-                        required
-                        rows={3}
-                        value={newPost.excerpt}
-                        onChange={(e) => setNewPost({...newPost, excerpt: e.target.value})}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400"
-                        placeholder="Brief description of your post..."
-                      />
-                    </div>
-
-                    {/* Category, Status, and Author */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                        <select
-                          value={newPost.category}
-                          onChange={(e) => setNewPost({...newPost, category: e.target.value})}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400"
-                        >
-                          <option value="Sustainability">Sustainability</option>
-                          <option value="Technology">Technology</option>
-                          <option value="Organic">Organic</option>
-                          <option value="Climate">Climate</option>
-                          <option value="Innovation">Innovation</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                        <select
-                          value={newPost.status}
-                          onChange={(e) => setNewPost({...newPost, status: e.target.value})}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400"
-                        >
-                          <option value="Draft">Draft</option>
-                          <option value="Review">Review</option>
-                          <option value="Published">Published</option>
-                          <option value="Scheduled">Scheduled</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Author</label>
-                        <input
-                          type="text"
-                          value={newPost.author}
-                          onChange={(e) => setNewPost({...newPost, author: e.target.value})}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Tags */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
-                      <div className="flex flex-wrap gap-2 mb-3">
-                        {newPost.tags.map((tag) => (
-                          <span
-                            key={tag}
-                            className="inline-flex items-center space-x-1 px-3 py-1 bg-primary-50 text-primary-600 text-sm rounded-full"
-                          >
-                            <span>#{tag}</span>
-                            <button
-                              type="button"
-                              onClick={() => removeTag(tag)}
-                              className="text-primary-400 hover:text-primary-600"
-                            >
-                              <X size={12} />
-                            </button>
-                          </span>
-                        ))}
-                      </div>
-                      <input
-                        type="text"
-                        value={newTag}
-                        onChange={(e) => setNewTag(e.target.value)}
-                        onKeyDown={handleAddTag}
-                        placeholder="Add tags (press Enter to add)..."
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400"
-                      />
-                    </div>
-
-                    {/* Content Editor */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Content *</label>
-                      <div className="border border-gray-300 rounded-lg overflow-hidden">
-                        <ReactQuill
-                          theme="snow"
-                          value={newPost.content}
-                          onChange={(content) => setNewPost({...newPost, content})}
-                          modules={quillModules}
-                          placeholder="Start writing your post..."
-                          style={{ height: '300px' }}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex flex-col sm:flex-row items-center justify-end space-y-3 sm:space-y-0 sm:space-x-3 pt-12 border-t border-gray-200 sticky bottom-0 bg-white">
-                      <button
-                        type="button"
-                        onClick={() => {setShowAddModal(false); setIsPreview(false);}}
-                        className="w-full sm:w-auto px-6 py-2 text-gray-600 hover:text-gray-800 transition-colors"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setIsPreview(true)}
-                        className="w-full sm:w-auto btn-secondary flex items-center justify-center space-x-2"
-                      >
-                        <Eye size={16} />
-                        <span>Preview</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleSaveDraft}
-                        className="w-full sm:w-auto btn-secondary flex items-center justify-center space-x-2"
-                      >
-                        <Save size={16} />
-                        <span>Save Draft</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handlePublish}
-                        className="w-full sm:w-auto btn-primary flex items-center justify-center space-x-2"
-                      >
-                        <Send size={16} />
-                        <span>Publish</span>
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              ) : (
-                /* Preview Mode */
-                <div>
-                  <div className="bg-gray-50 border-b border-gray-200 px-4 sm:px-6 py-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-lg font-semibold text-gray-900">Preview Mode</h3>
-                      <div className="flex items-center space-x-2">
-                        <button
-                          onClick={() => setIsPreview(false)}
-                          className="btn-secondary"
-                        >
-                          Back to Editor
-                        </button>
-                        <button
-                          onClick={() => {setShowAddModal(false); setIsPreview(false);}}
-                          className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"
-                        >
-                          <X size={20} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-4 sm:p-6 max-h-[80vh] overflow-y-auto">
-                    {newPost.coverImage && (
-                      <Image
-                        src={newPost.coverImage}
-                        alt="Cover"
-                        width={1200}
-                        height={400}
-                        className="w-full h-48 sm:h-64 object-cover rounded-lg mb-6 sm:mb-8"
-                      />
-                    )}
-                    <div className="flex items-center space-x-2 mb-4">
-                      <span className="px-3 py-1 bg-primary-100 text-primary-800 rounded-full text-sm font-medium">
-                        {newPost.category}
-                      </span>
-                    </div>
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-                      {newPost.title || 'Untitled Post'}
-                    </h1>
-                    <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-gray-600 mb-6">
-                      <span>By {newPost.author}</span>
-                      <span>•</span>
-                      <span>{newPost.status}</span>
-                    </div>
-                    <p className="text-lg text-gray-600 mb-6">{newPost.excerpt}</p>
-                    <div className="prose prose-lg max-w-none">
-                      <div dangerouslySetInnerHTML={{ __html: newPost.content }} />
-                    </div>
-                    {newPost.tags.length > 0 && (
-                      <div className="flex items-center space-x-2 mt-8">
-                        <Tag size={16} className="text-gray-400" />
-                        <div className="flex flex-wrap gap-2">
-                          {newPost.tags.map((tag) => (
-                            <span
-                              key={tag}
-                              className="px-3 py-1 bg-primary-50 text-primary-600 text-sm rounded-full"
-                            >
-                              #{tag}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Edit Post Modal */}
-      {showEditModal && postToEdit && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-          <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-            <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onClick={() => setShowEditModal(false)}></div>
-            
-            <div className="inline-block w-full max-w-4xl my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl">
-              <div className="max-h-[90vh] overflow-y-auto">
-                {/* Header */}
-                <div className="sticky top-0 bg-white border-b border-gray-200 px-4 sm:px-6 py-4 z-10">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-xl font-semibold text-gray-900">Edit Post</h3>
-                    <button
-                      onClick={() => setShowEditModal(false)}
-                      className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"
-                    >
-                      <X size={20} />
-                    </button>
-                  </div>
-                </div>
-                
-                <form onSubmit={handleEditPost} className="p-4 sm:p-6 space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
-                    <input
-                      type="text"
-                      defaultValue={postToEdit.title}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Excerpt</label>
-                    <textarea
-                      rows={3}
-                      defaultValue={postToEdit.excerpt}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                      <select
-                        defaultValue={postToEdit.category}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400"
-                      >
-                        <option value="Sustainability">Sustainability</option>
-                        <option value="Technology">Technology</option>
-                        <option value="Organic">Organic</option>
-                        <option value="Climate">Climate</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                      <select
-                        defaultValue={postToEdit.status}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400"
-                      >
-                        <option value="Draft">Draft</option>
-                        <option value="Review">Review</option>
-                        <option value="Published">Published</option>
-                        <option value="Scheduled">Scheduled</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Author</label>
-                      <input
-                        type="text"
-                        defaultValue={postToEdit.author}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row items-center justify-end space-y-3 sm:space-y-0 sm:space-x-3 pt-4 border-t border-gray-200">
-                    <button
-                      type="button"
-                      onClick={() => setShowEditModal(false)}
-                      className="w-full sm:w-auto px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      className="w-full sm:w-auto btn-primary"
-                    >
-                      Update Post
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && postToDelete && (
